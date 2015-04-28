@@ -1,6 +1,5 @@
 # usbserial
 
-아두이노 Serial to USB firmware 컴파일 하기
 원본소스는 아두이노 폴더의 \Resource\Java\hardware\arduino\firmware\atmegaxxu2 아래에 있다. 컴파일을 하려면 LUFA 라이브러리가 필요하다.
 
 arduino-usbserial 폴더와 같은 위치에 LUFA를 복사하고 make 파일에서 다음과 같은 내용을 수정한다.
