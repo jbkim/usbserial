@@ -1,0 +1,1548 @@
+   1               		.file	"Arduino-usbdfu.c"
+   2               	__SREG__ = 0x3f
+   3               	__SP_H__ = 0x3e
+   4               	__SP_L__ = 0x3d
+   5               	__CCP__  = 0x34
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  17               	.Ltext0:
+  18               		.section	.text.DiscardFillerBytes,"ax",@progbits
+  20               	DiscardFillerBytes:
+  21               	.LFB85:
+  22               	.LSM0:
+  23               	.LVL0:
+  24               	/* prologue: function */
+  25               	/* frame size = 0 */
+  26 0000 982F      		mov r25,r24
+  27 0002 00C0      		rjmp .L2
+  28               	.LVL1:
+  29               	.L8:
+  30               	.LBB116:
+  31               	.LBB117:
+  32               	.LSM1:
+  33 0004 8091 F200 		lds r24,242
+  34               	.LVL2:
+  35               	.LBE117:
+  36               	.LBE116:
+  37               	.LSM2:
+  38 0008 8823      		tst r24
+  39 000a 01F4      		brne .L3
+  40               	.LBB118:
+  41               	.LBB119:
+  42               	.LSM3:
+  43 000c 8091 E800 		lds r24,232
+  44 0010 8B7F      		andi r24,lo8(-5)
+  45 0012 8093 E800 		sts 232,r24
+  46 0016 00C0      		rjmp .L4
+  47               	.L6:
+  48               	.LBE119:
+  49               	.LBE118:
+  50               	.LSM4:
+  51 0018 8EB3      		in r24,62-32
+  52 001a 8823      		tst r24
+  53 001c 01F0      		breq .L9
+  54               	.L4:
+  55               	.LBB120:
+  56               	.LBB121:
+  57               	.LSM5:
+  58 001e 8091 E800 		lds r24,232
+  59               	.LBE121:
+  60               	.LBE120:
+  61               	.LSM6:
+  62 0022 82FF      		sbrs r24,2
+  63 0024 00C0      		rjmp .L6
+  64 0026 00C0      		rjmp .L7
+  65               	.L3:
+  66               	.LBB122:
+  67               	.LBB123:
+  68               	.LSM7:
+  69 0028 8091 F100 		lds r24,241
+  70               	.LVL3:
+  71               	.L7:
+  72 002c 9150      		subi r25,lo8(-(-1))
+  73               	.LVL4:
+  74               	.L2:
+  75               	.LBE123:
+  76               	.LBE122:
+  77               	.LSM8:
+  78 002e 9923      		tst r25
+  79 0030 01F4      		brne .L8
+  80               	.L9:
+  81 0032 0895      		ret
+  82               	.LFE85:
+  84               		.section	.text.LoadStartEndAddresses,"ax",@progbits
+  86               	LoadStartEndAddresses:
+  87               	.LFB87:
+  88               	.LSM9:
+  89               	/* prologue: function */
+  90               	/* frame size = 0 */
+  91               	.LSM10:
+  92 0000 2091 0000 		lds r18,SentCommand+5
+  93 0004 3091 0000 		lds r19,SentCommand+4
+  94               	.LSM11:
+  95 0008 8091 0000 		lds r24,SentCommand+3
+  96               	.LVL5:
+  97 000c 9091 0000 		lds r25,SentCommand+2
+  98               	.LVL6:
+  99 0010 8093 0000 		sts StartAddr,r24
+ 100 0014 9093 0000 		sts StartAddr+1,r25
+ 101               	.LSM12:
+ 102 0018 C901      		movw r24,r18
+ 103               	.LVL7:
+ 104 001a 8093 0000 		sts EndAddr,r24
+ 105               	.LVL8:
+ 106 001e 9093 0000 		sts EndAddr+1,r25
+ 107               	.LVL9:
+ 108               	/* epilogue start */
+ 109               	.LSM13:
+ 110 0022 0895      		ret
+ 111               	.LFE87:
+ 113               		.section	.text.ProcessBootloaderCommand,"ax",@progbits
+ 115               	ProcessBootloaderCommand:
+ 116               	.LFB86:
+ 117               	.LSM14:
+ 118               	/* prologue: function */
+ 119               	/* frame size = 0 */
+ 120               	.LSM15:
+ 121 0000 8091 0000 		lds r24,SentCommand
+ 122 0004 8430      		cpi r24,lo8(4)
+ 123 0006 01F4      		brne .+2
+ 124 0008 00C0      		rjmp .L16
+ 125 000a 8530      		cpi r24,lo8(5)
+ 126 000c 00F4      		brsh .L19
+ 127 000e 8130      		cpi r24,lo8(1)
+ 128 0010 01F0      		breq .L14
+ 129 0012 8330      		cpi r24,lo8(3)
+ 130 0014 01F0      		breq .+2
+ 131 0016 00C0      		rjmp .L33
+ 132 0018 00C0      		rjmp .L41
+ 133               	.L19:
+ 134 001a 8530      		cpi r24,lo8(5)
+ 135 001c 01F4      		brne .+2
+ 136 001e 00C0      		rjmp .L17
+ 137 0020 8630      		cpi r24,lo8(6)
+ 138 0022 01F0      		breq .+2
+ 139 0024 00C0      		rjmp .L33
+ 140 0026 00C0      		rjmp .L42
+ 141               	.L14:
+ 142               	.LBB137:
+ 143               	.LBB138:
+ 144               	.LSM16:
+ 145 0028 8091 0000 		lds r24,SentCommand+1
+ 146 002c 8230      		cpi r24,lo8(2)
+ 147 002e 00F0      		brlo .+2
+ 148 0030 00C0      		rjmp .L33
+ 149               	.LSM17:
+ 150 0032 0E94 0000 		call LoadStartEndAddresses
+ 151               	.LSM18:
+ 152 0036 8091 0000 		lds r24,SentCommand+1
+ 153 003a 8823      		tst r24
+ 154 003c 01F4      		brne .L20
+ 155               	.LBB139:
+ 156               	.LSM19:
+ 157 003e 8091 0000 		lds r24,StartAddr
+ 158 0042 9091 0000 		lds r25,(StartAddr)+1
+ 159               	.LVL10:
+ 160               	.LSM20:
+ 161 0046 23E0      		ldi r18,lo8(3)
+ 162 0048 FC01      		movw r30,r24
+ 163               	.LVL11:
+ 164               	/* #APP */
+ 165               	 ;  599 "Arduino-usbdfu.c" 1
+ 166 004a 2093 5700 		sts 87, r18
+ 167 004e E895      		spm
+ 168               		
+ 169               	 ;  0 "" 2
+ 170               	/* #NOAPP */
+ 171               	.L21:
+ 172               	.LBE139:
+ 173               	.LBE138:
+ 174               	.LSM21:
+ 175 0050 07B6      		in __tmp_reg__,87-32
+ 176 0052 00FC      		sbrc __tmp_reg__,0
+ 177 0054 00C0      		rjmp .L21
+ 178               	.L20:
+ 179               	.LBB140:
+ 180               	.LSM22:
+ 181 0056 85E0      		ldi r24,lo8(5)
+ 182 0058 00C0      		rjmp .L39
+ 183               	.L41:
+ 184               	.LBE140:
+ 185               	.LBE137:
+ 186               	.LBB141:
+ 187               	.LBB142:
+ 188               	.LSM23:
+ 189 005a 8091 0000 		lds r24,SentCommand+1
+ 190 005e 8823      		tst r24
+ 191 0060 01F0      		breq .L22
+ 192 0062 8230      		cpi r24,lo8(2)
+ 193 0064 01F4      		brne .L23
+ 194               	.L22:
+ 195               	.LSM24:
+ 196 0066 0E94 0000 		call LoadStartEndAddresses
+ 197               	.LSM25:
+ 198 006a 89E0      		ldi r24,lo8(9)
+ 199               	.L39:
+ 200 006c 8093 0000 		sts DFU_State,r24
+ 201 0070 0895      		ret
+ 202               	.L23:
+ 203               	.LSM26:
+ 204 0072 8130      		cpi r24,lo8(1)
+ 205 0074 01F0      		breq .+2
+ 206 0076 00C0      		rjmp .L33
+ 207 0078 20E0      		ldi r18,lo8(0)
+ 208 007a 30E0      		ldi r19,hi8(0)
+ 209 007c 40E0      		ldi r20,hlo8(0)
+ 210 007e 50E0      		ldi r21,hhi8(0)
+ 211               	.LVL12:
+ 212               	.L25:
+ 213               	.LBB143:
+ 214               	.LBB144:
+ 215               	.LSM27:
+ 216 0080 F901      		movw r30,r18
+ 217               	.LVL13:
+ 218               	/* #APP */
+ 219               	 ;  633 "Arduino-usbdfu.c" 1
+ 220 0082 8491      		lpm r24, Z
+ 221               		
+ 222               	 ;  0 "" 2
+ 223               	/* #NOAPP */
+ 224               	.LBE144:
+ 225 0084 8F3F      		cpi r24,lo8(-1)
+ 226 0086 01F0      		breq .L24
+ 227               	.LSM28:
+ 228 0088 CA01      		movw r24,r20
+ 229 008a AA27      		clr r26
+ 230 008c BB27      		clr r27
+ 231               	.LVL14:
+ 232 008e 8093 0000 		sts Flash64KBPage,r24
+ 233               	.LSM29:
+ 234 0092 3093 0000 		sts (StartAddr)+1,r19
+ 235 0096 2093 0000 		sts StartAddr,r18
+ 236               	.LSM30:
+ 237 009a 8AE0      		ldi r24,lo8(10)
+ 238 009c 8093 0000 		sts DFU_State,r24
+ 239               	.LSM31:
+ 240 00a0 85E0      		ldi r24,lo8(5)
+ 241 00a2 8093 0000 		sts DFU_Status,r24
+ 242 00a6 0895      		ret
+ 243               	.LVL15:
+ 244               	.L24:
+ 245               	.LSM32:
+ 246 00a8 2F5F      		subi r18,lo8(-(1))
+ 247 00aa 3F4F      		sbci r19,hi8(-(1))
+ 248 00ac 4F4F      		sbci r20,hlo8(-(1))
+ 249 00ae 5F4F      		sbci r21,hhi8(-(1))
+ 250               	.LVL16:
+ 251               	.LSM33:
+ 252 00b0 2030      		cpi r18,lo8(4096)
+ 253 00b2 F0E1      		ldi r31,hi8(4096)
+ 254 00b4 3F07      		cpc r19,r31
+ 255 00b6 F0E0      		ldi r31,hlo8(4096)
+ 256 00b8 4F07      		cpc r20,r31
+ 257 00ba F0E0      		ldi r31,hhi8(4096)
+ 258 00bc 5F07      		cpc r21,r31
+ 259 00be 01F4      		brne .L25
+ 260 00c0 0895      		ret
+ 261               	.LVL17:
+ 262               	.L16:
+ 263               	.LBE143:
+ 264               	.LBE142:
+ 265               	.LBE141:
+ 266               	.LBB145:
+ 267               	.LBB146:
+ 268               	.LSM34:
+ 269 00c2 8091 0000 		lds r24,SentCommand+1
+ 270 00c6 8330      		cpi r24,lo8(3)
+ 271 00c8 01F4      		brne .L26
+ 272               	.LSM35:
+ 273 00ca 81E0      		ldi r24,lo8(1)
+ 274 00cc 8093 0000 		sts WaitForExit,r24
+ 275               	.LSM36:
+ 276 00d0 8091 0000 		lds r24,SentCommand+6
+ 277 00d4 9091 0000 		lds r25,(SentCommand+6)+1
+ 278 00d8 892B      		or r24,r25
+ 279 00da 01F0      		breq .L27
+ 280               	.LSM37:
+ 281 00dc 8091 0000 		lds r24,SentCommand+2
+ 282 00e0 8130      		cpi r24,lo8(1)
+ 283 00e2 01F0      		breq .+2
+ 284 00e4 00C0      		rjmp .L33
+ 285               	.LBB148:
+ 286               	.LSM38:
+ 287 00e6 8091 0000 		lds r24,SentCommand+5
+ 288               	.LVL18:
+ 289 00ea 9091 0000 		lds r25,SentCommand+4
+ 290               	.LVL19:
+ 291               	.LSM39:
+ 292 00ee 9093 0000 		sts (AppStartPtr)+1,r25
+ 293 00f2 8093 0000 		sts AppStartPtr,r24
+ 294 00f6 0895      		ret
+ 295               	.LVL20:
+ 296               	.L27:
+ 297               	.LBE148:
+ 298               	.LSM40:
+ 299 00f8 8091 0000 		lds r24,SentCommand+2
+ 300 00fc 8823      		tst r24
+ 301 00fe 01F4      		brne .L28
+ 302               	.LSM41:
+ 303 0100 2CE0      		ldi r18,lo8(12)
+ 304 0102 88E1      		ldi r24,lo8(24)
+ 305 0104 90E0      		ldi r25,hi8(24)
+ 306               	/* #APP */
+ 307               	 ;  682 "Arduino-usbdfu.c" 1
+ 308 0106 0FB6      		in __tmp_reg__,__SREG__
+ 309 0108 F894      		cli
+ 310 010a A895      		wdr
+ 311 010c 8093 6000 		sts 96,r24
+ 312 0110 0FBE      		out __SREG__,__tmp_reg__
+ 313 0112 2093 6000 		sts 96,r18
+ 314               		
+ 315               	 ;  0 "" 2
+ 316               	/* #NOAPP */
+ 317 0116 0895      		ret
+ 318               	.L28:
+ 319               	.LSM42:
+ 320 0118 1092 0000 		sts RunBootloader,__zero_reg__
+ 321 011c 0895      		ret
+ 322               	.L26:
+ 323               	.LSM43:
+ 324 011e 8823      		tst r24
+ 325 0120 01F0      		breq .+2
+ 326 0122 00C0      		rjmp .L33
+ 327 0124 8091 0000 		lds r24,SentCommand+2
+ 328 0128 8F3F      		cpi r24,lo8(-1)
+ 329 012a 01F0      		breq .+2
+ 330 012c 00C0      		rjmp .L33
+ 331 012e E0E0      		ldi r30,lo8(0)
+ 332 0130 F0E0      		ldi r31,hi8(0)
+ 333               	.LBB149:
+ 334               	.LSM44:
+ 335 0132 93E0      		ldi r25,lo8(3)
+ 336               	.LSM45:
+ 337 0134 85E0      		ldi r24,lo8(5)
+ 338               	.L31:
+ 339               	.LSM46:
+ 340               	/* #APP */
+ 341               	 ;  698 "Arduino-usbdfu.c" 1
+ 342 0136 9093 5700 		sts 87, r25
+ 343 013a E895      		spm
+ 344               		
+ 345               	 ;  0 "" 2
+ 346               	/* #NOAPP */
+ 347               	.L29:
+ 348               	.LBE149:
+ 349               	.LBE146:
+ 350               	.LSM47:
+ 351 013c 07B6      		in __tmp_reg__,87-32
+ 352 013e 00FC      		sbrc __tmp_reg__,0
+ 353 0140 00C0      		rjmp .L29
+ 354               	.LBB151:
+ 355               	.LBB147:
+ 356               	.LSM48:
+ 357               	/* #APP */
+ 358               	 ;  700 "Arduino-usbdfu.c" 1
+ 359 0142 8093 5700 		sts 87, r24
+ 360 0146 E895      		spm
+ 361               		
+ 362               	 ;  0 "" 2
+ 363               	/* #NOAPP */
+ 364               	.L30:
+ 365               	.LBE147:
+ 366               	.LBE151:
+ 367               	.LSM49:
+ 368 0148 07B6      		in __tmp_reg__,87-32
+ 369 014a 00FC      		sbrc __tmp_reg__,0
+ 370 014c 00C0      		rjmp .L30
+ 371 014e E058      		subi r30,lo8(-(128))
+ 372 0150 FF4F      		sbci r31,hi8(-(128))
+ 373               	.LBB152:
+ 374               	.LBB150:
+ 375               	.LSM50:
+ 376 0152 20E1      		ldi r18,hi8(4096)
+ 377 0154 E030      		cpi r30,lo8(4096)
+ 378 0156 F207      		cpc r31,r18
+ 379 0158 01F4      		brne .L31
+ 380               	.LSM51:
+ 381 015a 81E1      		ldi r24,lo8(17)
+ 382               	/* #APP */
+ 383               	 ;  707 "Arduino-usbdfu.c" 1
+ 384 015c 8093 5700 		sts 87, r24
+ 385 0160 E895      		spm
+ 386               		
+ 387               	 ;  0 "" 2
+ 388               	/* #NOAPP */
+ 389 0162 0895      		ret
+ 390               	.L17:
+ 391               	.LBE150:
+ 392               	.LBE152:
+ 393               	.LBE145:
+ 394               	.LBB153:
+ 395               	.LBB154:
+ 396               	.LSM52:
+ 397 0164 E091 0000 		lds r30,SentCommand+2
+ 398               	.LVL21:
+ 399               	.LSM53:
+ 400 0168 8091 0000 		lds r24,SentCommand+1
+ 401 016c 8823      		tst r24
+ 402 016e 01F4      		brne .L32
+ 403               	.LSM54:
+ 404 0170 F0E0      		ldi r31,lo8(0)
+ 405               	.LVL22:
+ 406 0172 E050      		subi r30,lo8(-(BootloaderInfo.2673))
+ 407 0174 F040      		sbci r31,hi8(-(BootloaderInfo.2673))
+ 408               	.LVL23:
+ 409 0176 00C0      		rjmp .L40
+ 410               	.LVL24:
+ 411               	.L32:
+ 412               	.LSM55:
+ 413 0178 8130      		cpi r24,lo8(1)
+ 414 017a 01F4      		brne .L33
+ 415               	.LSM56:
+ 416 017c F0E0      		ldi r31,lo8(0)
+ 417               	.LVL25:
+ 418 017e E050      		subi r30,lo8(-(SignatureInfo.2674-48))
+ 419 0180 F040      		sbci r31,hi8(-(SignatureInfo.2674-48))
+ 420               	.LVL26:
+ 421               	.L40:
+ 422 0182 8081      		ld r24,Z
+ 423 0184 8093 0000 		sts ResponseByte,r24
+ 424 0188 0895      		ret
+ 425               	.LVL27:
+ 426               	.L42:
+ 427               	.LBE154:
+ 428               	.LBE153:
+ 429               	.LSM57:
+ 430 018a 8091 0000 		lds r24,SentCommand+1
+ 431 018e 8330      		cpi r24,lo8(3)
+ 432 0190 01F4      		brne .L33
+ 433 0192 8091 0000 		lds r24,SentCommand+2
+ 434 0196 8823      		tst r24
+ 435 0198 01F4      		brne .L33
+ 436               	.LSM58:
+ 437 019a 8091 0000 		lds r24,SentCommand+3
+ 438 019e 8093 0000 		sts Flash64KBPage,r24
+ 439               	.LVL28:
+ 440               	.L33:
+ 441 01a2 0895      		ret
+ 442               	.LFE86:
+ 444               		.section	.text.EVENT_USB_Device_UnhandledControlRequest,"ax",@progbits
+ 445               	.global	EVENT_USB_Device_UnhandledControlRequest
+ 447               	EVENT_USB_Device_UnhandledControlRequest:
+ 448               	.LFB84:
+ 449               	.LSM59:
+ 450 0000 2F92      		push r2
+ 451 0002 3F92      		push r3
+ 452 0004 4F92      		push r4
+ 453 0006 5F92      		push r5
+ 454 0008 6F92      		push r6
+ 455 000a 7F92      		push r7
+ 456 000c 9F92      		push r9
+ 457 000e AF92      		push r10
+ 458 0010 BF92      		push r11
+ 459 0012 CF92      		push r12
+ 460 0014 DF92      		push r13
+ 461 0016 EF92      		push r14
+ 462 0018 FF92      		push r15
+ 463 001a 0F93      		push r16
+ 464 001c 1F93      		push r17
+ 465 001e CF93      		push r28
+ 466 0020 DF93      		push r29
+ 467               	/* prologue: function */
+ 468               	/* frame size = 0 */
+ 469               	.LSM60:
+ 470 0022 8091 0000 		lds r24,USB_ControlRequest+6
+ 471 0026 9091 0000 		lds r25,(USB_ControlRequest+6)+1
+ 472 002a 9093 0000 		sts (SentCommand+6)+1,r25
+ 473 002e 8093 0000 		sts SentCommand+6,r24
+ 474               	.LSM61:
+ 475 0032 8091 0000 		lds r24,PulseMSRemaining
+ 476 0036 8823      		tst r24
+ 477 0038 01F0      		breq .L44
+ 478 003a 8091 0000 		lds r24,PulseMSRemaining
+ 479 003e 8150      		subi r24,lo8(-(-1))
+ 480 0040 8093 0000 		sts PulseMSRemaining,r24
+ 481 0044 8091 0000 		lds r24,PulseMSRemaining
+ 482 0048 8823      		tst r24
+ 483 004a 01F4      		brne .L44
+ 484               	.LBB155:
+ 485               	.LBB156:
+ 486               	.LSM62:
+ 487 004c 5D9A      		sbi 43-32,5
+ 488               	.L44:
+ 489               	.LBE156:
+ 490               	.LBE155:
+ 491               	.LSM63:
+ 492 004e 8091 0000 		lds r24,PulseMSRemaining+1
+ 493 0052 8823      		tst r24
+ 494 0054 01F0      		breq .L45
+ 495 0056 8091 0000 		lds r24,PulseMSRemaining+1
+ 496 005a 8150      		subi r24,lo8(-(-1))
+ 497 005c 8093 0000 		sts PulseMSRemaining+1,r24
+ 498 0060 8091 0000 		lds r24,PulseMSRemaining+1
+ 499 0064 8823      		tst r24
+ 500 0066 01F4      		brne .L45
+ 501               	.LBB157:
+ 502               	.LBB158:
+ 503               	.LSM64:
+ 504 0068 5C9A      		sbi 43-32,4
+ 505               	.L45:
+ 506               	.LBE158:
+ 507               	.LBE157:
+ 508               	.LSM65:
+ 509 006a 8091 0000 		lds r24,USB_ControlRequest+1
+ 510 006e 8330      		cpi r24,lo8(3)
+ 511 0070 01F4      		brne .+2
+ 512 0072 00C0      		rjmp .L49
+ 513 0074 8430      		cpi r24,lo8(4)
+ 514 0076 00F4      		brsh .L53
+ 515 0078 8130      		cpi r24,lo8(1)
+ 516 007a 01F0      		breq .L47
+ 517 007c 8230      		cpi r24,lo8(2)
+ 518 007e 01F0      		breq .+2
+ 519 0080 00C0      		rjmp .L96
+ 520 0082 00C0      		rjmp .L113
+ 521               	.L53:
+ 522 0084 8530      		cpi r24,lo8(5)
+ 523 0086 01F4      		brne .+2
+ 524 0088 00C0      		rjmp .L51
+ 525 008a 8530      		cpi r24,lo8(5)
+ 526 008c 00F4      		brsh .+2
+ 527 008e 00C0      		rjmp .L50
+ 528 0090 8630      		cpi r24,lo8(6)
+ 529 0092 01F0      		breq .+2
+ 530 0094 00C0      		rjmp .L96
+ 531 0096 00C0      		rjmp .L114
+ 532               	.L47:
+ 533               	.LBB159:
+ 534               	.LBB160:
+ 535               	.LSM66:
+ 536 0098 5C98      		cbi 43-32,4
+ 537               	.LBE160:
+ 538               	.LBE159:
+ 539               	.LSM67:
+ 540 009a 83E0      		ldi r24,lo8(3)
+ 541 009c 8093 0000 		sts PulseMSRemaining+1,r24
+ 542               	.LBB161:
+ 543               	.LBB162:
+ 544               	.LSM68:
+ 545 00a0 8091 E800 		lds r24,232
+ 546 00a4 877F      		andi r24,lo8(-9)
+ 547 00a6 8093 E800 		sts 232,r24
+ 548               	.LBE162:
+ 549               	.LBE161:
+ 550               	.LSM69:
+ 551 00aa 8091 0000 		lds r24,WaitForExit
+ 552 00ae 8823      		tst r24
+ 553 00b0 01F0      		breq .L54
+ 554               	.LSM70:
+ 555 00b2 0E94 0000 		call ProcessBootloaderCommand
+ 556               	.LBB163:
+ 557               	.LBB164:
+ 558               	.LSM71:
+ 559 00b6 5D9A      		sbi 43-32,5
+ 560               	.LBE164:
+ 561               	.LBE163:
+ 562               	.LBB165:
+ 563               	.LBB166:
+ 564 00b8 5C9A      		sbi 43-32,4
+ 565               	.LBE166:
+ 566               	.LBE165:
+ 567               	.LSM72:
+ 568 00ba 1092 0000 		sts WaitForExit,__zero_reg__
+ 569               	.L54:
+ 570               	.LSM73:
+ 571 00be 2091 0000 		lds r18,SentCommand+6
+ 572 00c2 3091 0000 		lds r19,(SentCommand+6)+1
+ 573 00c6 2115      		cp r18,__zero_reg__
+ 574 00c8 3105      		cpc r19,__zero_reg__
+ 575 00ca 01F4      		brne .L105
+ 576 00cc 00C0      		rjmp .L56
+ 577               	.L57:
+ 578               	.LSM74:
+ 579 00ce 8EB3      		in r24,62-32
+ 580 00d0 8823      		tst r24
+ 581 00d2 01F4      		brne .+2
+ 582 00d4 00C0      		rjmp .L96
+ 583               	.L105:
+ 584               	.LBB167:
+ 585               	.LBB168:
+ 586               	.LSM75:
+ 587 00d6 8091 E800 		lds r24,232
+ 588               	.LBE168:
+ 589               	.LBE167:
+ 590               	.LSM76:
+ 591 00da 82FF      		sbrs r24,2
+ 592 00dc 00C0      		rjmp .L57
+ 593               	.LBB169:
+ 594               	.LBB170:
+ 595               	.LSM77:
+ 596 00de 8091 F100 		lds r24,241
+ 597               	.LBE170:
+ 598               	.LBE169:
+ 599               	.LSM78:
+ 600 00e2 8093 0000 		sts SentCommand,r24
+ 601               	.LSM79:
+ 602 00e6 2150      		subi r18,lo8(-(-1))
+ 603 00e8 3040      		sbci r19,hi8(-(-1))
+ 604 00ea 3093 0000 		sts (SentCommand+6)+1,r19
+ 605 00ee 2093 0000 		sts SentCommand+6,r18
+ 606 00f2 E0E0      		ldi r30,lo8(SentCommand+1)
+ 607 00f4 F0E0      		ldi r31,hi8(SentCommand+1)
+ 608 00f6 00C0      		rjmp .L58
+ 609               	.L60:
+ 610               	.LBB171:
+ 611               	.LBB172:
+ 612               	.LBB173:
+ 613               	.LSM80:
+ 614 00f8 8091 F100 		lds r24,241
+ 615               	.LBE173:
+ 616               	.LBE172:
+ 617               	.LSM81:
+ 618 00fc 8193      		st Z+,r24
+ 619 00fe 2150      		subi r18,lo8(-(-1))
+ 620 0100 3040      		sbci r19,hi8(-(-1))
+ 621               	.LSM82:
+ 622 0102 80E0      		ldi r24,hi8(SentCommand+6)
+ 623 0104 E030      		cpi r30,lo8(SentCommand+6)
+ 624 0106 F807      		cpc r31,r24
+ 625 0108 01F4      		brne .L58
+ 626 010a 3183      		std Z+1,r19
+ 627 010c 2083      		st Z,r18
+ 628 010e 00C0      		rjmp .L59
+ 629               	.L58:
+ 630               	.LBB174:
+ 631               	.LBB175:
+ 632               	.LSM83:
+ 633 0110 8091 F200 		lds r24,242
+ 634               	.LBE175:
+ 635               	.LBE174:
+ 636               	.LSM84:
+ 637 0114 8823      		tst r24
+ 638 0116 01F4      		brne .L60
+ 639 0118 3093 0000 		sts (SentCommand+6)+1,r19
+ 640 011c 2093 0000 		sts SentCommand+6,r18
+ 641               	.L59:
+ 642               	.LBE171:
+ 643               	.LSM85:
+ 644 0120 0E94 0000 		call ProcessBootloaderCommand
+ 645               	.L56:
+ 646               	.LSM86:
+ 647 0124 8091 0000 		lds r24,DFU_State
+ 648 0128 8530      		cpi r24,lo8(5)
+ 649 012a 01F0      		breq .+2
+ 650 012c 00C0      		rjmp .L61
+ 651               	.LSM87:
+ 652 012e 8091 0000 		lds r24,SentCommand+6
+ 653 0132 9091 0000 		lds r25,(SentCommand+6)+1
+ 654 0136 892B      		or r24,r25
+ 655 0138 01F4      		brne .L62
+ 656               	.LSM88:
+ 657 013a 82E0      		ldi r24,lo8(2)
+ 658 013c 8093 0000 		sts DFU_State,r24
+ 659 0140 00C0      		rjmp .L61
+ 660               	.L62:
+ 661               	.LBB176:
+ 662               	.LSM89:
+ 663 0142 8AE1      		ldi r24,lo8(26)
+ 664 0144 0E94 0000 		call DiscardFillerBytes
+ 665               	.LSM90:
+ 666 0148 8091 0000 		lds r24,StartAddr
+ 667 014c 8F71      		andi r24,lo8(31)
+ 668 014e 0E94 0000 		call DiscardFillerBytes
+ 669               	.LSM91:
+ 670 0152 C091 0000 		lds r28,EndAddr
+ 671 0156 D091 0000 		lds r29,(EndAddr)+1
+ 672 015a 2091 0000 		lds r18,StartAddr
+ 673 015e 3091 0000 		lds r19,(StartAddr)+1
+ 674 0162 2196      		adiw r28,1
+ 675 0164 AE01      		movw r20,r28
+ 676               	.LVL29:
+ 677 0166 421B      		sub r20,r18
+ 678 0168 530B      		sbc r21,r19
+ 679 016a 2197      		sbiw r28,1
+ 680               	.LSM92:
+ 681 016c 8091 0000 		lds r24,SentCommand+1
+ 682 0170 8823      		tst r24
+ 683 0172 01F0      		breq .+2
+ 684 0174 00C0      		rjmp .L106
+ 685               	.LBB177:
+ 686               	.LSM93:
+ 687 0176 1A01      		movw r2,r20
+ 688               	.LVL30:
+ 689 0178 3694      		lsr r3
+ 690 017a 2794      		ror r2
+ 691               	.LSM94:
+ 692 017c C901      		movw r24,r18
+ 693               	.LVL31:
+ 694 017e A091 0000 		lds r26,Flash64KBPage
+ 695               	.LVL32:
+ 696 0182 B0E0      		ldi r27,lo8(0)
+ 697               	.LVL33:
+ 698               	.LSM95:
+ 699 0184 9C01      		movw r18,r24
+ 700 0186 AD01      		movw r20,r26
+ 701               	.LVL34:
+ 702 0188 62E0      		ldi r22,lo8(2)
+ 703 018a E62E      		mov r14,r22
+ 704 018c F12C      		mov r15,__zero_reg__
+ 705 018e 012D      		mov r16,__zero_reg__
+ 706 0190 112D      		mov r17,__zero_reg__
+ 707               	.LVL35:
+ 708 0192 E20E      		add r14,r18
+ 709 0194 F31E      		adc r15,r19
+ 710 0196 041F      		adc r16,r20
+ 711 0198 151F      		adc r17,r21
+ 712 019a 5901      		movw r10,r18
+ 713 019c 6A01      		movw r12,r20
+ 714 019e 90E0      		ldi r25,lo8(0)
+ 715               	.LVL36:
+ 716               	.LSM96:
+ 717 01a0 9924      		clr r9
+ 718 01a2 9394      		inc r9
+ 719               	.LSM97:
+ 720 01a4 B5E0      		ldi r27,lo8(5)
+ 721               	.LVL37:
+ 722               	.LSM98:
+ 723 01a6 A3E0      		ldi r26,lo8(3)
+ 724               	.LVL38:
+ 725 01a8 00C0      		rjmp .L64
+ 726               	.LVL39:
+ 727               	.L72:
+ 728               	.LBB178:
+ 729               	.LBB179:
+ 730               	.LSM99:
+ 731 01aa 8091 F200 		lds r24,242
+ 732               	.LVL40:
+ 733               	.LBE179:
+ 734               	.LBE178:
+ 735               	.LSM100:
+ 736 01ae 8823      		tst r24
+ 737 01b0 01F4      		brne .L65
+ 738               	.LBB180:
+ 739               	.LBB181:
+ 740               	.LSM101:
+ 741 01b2 8091 E800 		lds r24,232
+ 742 01b6 8B7F      		andi r24,lo8(-5)
+ 743 01b8 8093 E800 		sts 232,r24
+ 744 01bc 00C0      		rjmp .L66
+ 745               	.L67:
+ 746               	.LBE181:
+ 747               	.LBE180:
+ 748               	.LSM102:
+ 749 01be 8EB3      		in r24,62-32
+ 750 01c0 8823      		tst r24
+ 751 01c2 01F4      		brne .+2
+ 752 01c4 00C0      		rjmp .L96
+ 753               	.L66:
+ 754               	.LBB182:
+ 755               	.LBB183:
+ 756               	.LSM103:
+ 757 01c6 8091 E800 		lds r24,232
+ 758               	.LBE183:
+ 759               	.LBE182:
+ 760               	.LSM104:
+ 761 01ca 82FF      		sbrs r24,2
+ 762 01cc 00C0      		rjmp .L67
+ 763               	.L65:
+ 764               	.LSM105:
+ 765 01ce 0894      		sec
+ 766 01d0 2108      		sbc r2,__zero_reg__
+ 767 01d2 3108      		sbc r3,__zero_reg__
+ 768               	.LBB184:
+ 769               	.LBB185:
+ 770               	.LSM106:
+ 771 01d4 8091 F100 		lds r24,241
+ 772 01d8 682F      		mov r22,r24
+ 773               	.LSM107:
+ 774 01da 8091 F100 		lds r24,241
+ 775 01de 782F      		mov r23,r24
+ 776               	.LBE185:
+ 777               	.LBE184:
+ 778               	.LSM108:
+ 779 01e0 F501      		movw r30,r10
+ 780               	.LVL41:
+ 781               	/* #APP */
+ 782               	 ;  265 "Arduino-usbdfu.c" 1
+ 783 01e2 0B01      		movw  r0, r22
+ 784 01e4 9092 5700 		sts 87, r9
+ 785 01e8 E895      		spm
+ 786 01ea 1124      		clr  r1
+ 787               		
+ 788               	 ;  0 "" 2
+ 789               	.LSM109:
+ 790               	/* #NOAPP */
+ 791 01ec 9F5F      		subi r25,lo8(-(1))
+ 792               	.LSM110:
+ 793 01ee 9034      		cpi r25,lo8(64)
+ 794 01f0 01F0      		breq .L68
+ 795 01f2 2114      		cp r2,__zero_reg__
+ 796 01f4 3104      		cpc r3,__zero_reg__
+ 797 01f6 01F4      		brne .L69
+ 798               	.L68:
+ 799               	.LSM111:
+ 800 01f8 F901      		movw r30,r18
+ 801               	.LVL42:
+ 802               	/* #APP */
+ 803               	 ;  275 "Arduino-usbdfu.c" 1
+ 804 01fa B093 5700 		sts 87, r27
+ 805 01fe E895      		spm
+ 806               		
+ 807               	 ;  0 "" 2
+ 808               	/* #NOAPP */
+ 809               	.L70:
+ 810               	.LSM112:
+ 811 0200 07B6      		in __tmp_reg__,87-32
+ 812 0202 00FC      		sbrc __tmp_reg__,0
+ 813 0204 00C0      		rjmp .L70
+ 814               	.LSM113:
+ 815 0206 2114      		cp r2,__zero_reg__
+ 816 0208 3104      		cpc r3,__zero_reg__
+ 817 020a 01F0      		breq .L69
+ 818               	.LSM114:
+ 819 020c F701      		movw r30,r14
+ 820               	.LVL43:
+ 821               	/* #APP */
+ 822               	 ;  285 "Arduino-usbdfu.c" 1
+ 823 020e A093 5700 		sts 87, r26
+ 824 0212 E895      		spm
+ 825               		
+ 826               	 ;  0 "" 2
+ 827               	/* #NOAPP */
+ 828               	.L71:
+ 829               	.LSM115:
+ 830 0214 07B6      		in __tmp_reg__,87-32
+ 831 0216 00FC      		sbrc __tmp_reg__,0
+ 832 0218 00C0      		rjmp .L71
+ 833 021a A801      		movw r20,r16
+ 834 021c 9701      		movw r18,r14
+ 835               	.LVL44:
+ 836 021e 90E0      		ldi r25,lo8(0)
+ 837               	.L69:
+ 838 0220 42E0      		ldi r20,lo8(2)
+ 839 0222 442E      		mov r4,r20
+ 840 0224 512C      		mov r5,__zero_reg__
+ 841 0226 612C      		mov r6,__zero_reg__
+ 842 0228 712C      		mov r7,__zero_reg__
+ 843               	.LVL45:
+ 844 022a E40C      		add r14,r4
+ 845 022c F51C      		adc r15,r5
+ 846 022e 061D      		adc r16,r6
+ 847 0230 171D      		adc r17,r7
+ 848 0232 A40C      		add r10,r4
+ 849 0234 B51C      		adc r11,r5
+ 850 0236 C61C      		adc r12,r6
+ 851 0238 D71C      		adc r13,r7
+ 852               	.LVL46:
+ 853               	.L64:
+ 854               	.LSM116:
+ 855 023a 2114      		cp r2,__zero_reg__
+ 856 023c 3104      		cpc r3,__zero_reg__
+ 857 023e 01F0      		breq .+2
+ 858 0240 00C0      		rjmp .L72
+ 859               	.LSM117:
+ 860 0242 D093 0000 		sts (StartAddr)+1,r29
+ 861 0246 C093 0000 		sts StartAddr,r28
+ 862               	.LSM118:
+ 863 024a 81E1      		ldi r24,lo8(17)
+ 864               	.LVL47:
+ 865               	/* #APP */
+ 866               	 ;  295 "Arduino-usbdfu.c" 1
+ 867 024c 8093 5700 		sts 87, r24
+ 868 0250 E895      		spm
+ 869               		
+ 870               	 ;  0 "" 2
+ 871               	/* #NOAPP */
+ 872 0252 00C0      		rjmp .L73
+ 873               	.LVL48:
+ 874               	.L78:
+ 875               	.LBE177:
+ 876               	.LBB186:
+ 877               	.LBB187:
+ 878               	.LSM119:
+ 879 0254 8091 F200 		lds r24,242
+ 880               	.LBE187:
+ 881               	.LBE186:
+ 882               	.LSM120:
+ 883 0258 8823      		tst r24
+ 884 025a 01F4      		brne .L74
+ 885               	.LBB188:
+ 886               	.LBB189:
+ 887               	.LSM121:
+ 888 025c 8091 E800 		lds r24,232
+ 889 0260 8B7F      		andi r24,lo8(-5)
+ 890 0262 8093 E800 		sts 232,r24
+ 891 0266 00C0      		rjmp .L75
+ 892               	.L76:
+ 893               	.LBE189:
+ 894               	.LBE188:
+ 895               	.LSM122:
+ 896 0268 8EB3      		in r24,62-32
+ 897 026a 8823      		tst r24
+ 898 026c 01F4      		brne .+2
+ 899 026e 00C0      		rjmp .L109
+ 900               	.L75:
+ 901               	.LBB190:
+ 902               	.LBB191:
+ 903               	.LSM123:
+ 904 0270 8091 E800 		lds r24,232
+ 905               	.LBE191:
+ 906               	.LBE190:
+ 907               	.LSM124:
+ 908 0274 82FF      		sbrs r24,2
+ 909 0276 00C0      		rjmp .L76
+ 910               	.L74:
+ 911               	.LBB192:
+ 912               	.LBB193:
+ 913               	.LSM125:
+ 914 0278 8091 F100 		lds r24,241
+ 915               	.L77:
+ 916               	.LBE193:
+ 917               	.LBE192:
+ 918               	.LBB194:
+ 919               	.LBB195:
+ 920               	.LSM126:
+ 921 027c F999      		sbic 63-32,1
+ 922 027e 00C0      		rjmp .L77
+ 923               	.LSM127:
+ 924 0280 1FBA      		out 63-32,__zero_reg__
+ 925               	.LSM128:
+ 926 0282 32BD      		out (65)+1-32,r19
+ 927 0284 21BD      		out 65-32,r18
+ 928               	.LSM129:
+ 929 0286 80BD      		out 64-32,r24
+ 930               	.LSM130:
+ 931               	/* #APP */
+ 932               	 ;  324 "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.
+ 933               		/* START EEPROM WRITE CRITICAL SECTION */
+ 934 0288 0FB6      		in	r0, 63		
+ 935 028a F894      		cli				
+ 936 028c FA9A      		sbi	31, 2	
+ 937 028e F99A      		sbi	31, 1	
+ 938 0290 0FBE      		out	63, r0		
+ 939               		/* END EEPROM WRITE CRITICAL SECTION */
+ 940               	 ;  0 "" 2
+ 941               	/* #NOAPP */
+ 942 0292 4150      		subi r20,lo8(-(-1))
+ 943 0294 5040      		sbci r21,hi8(-(-1))
+ 944 0296 2F5F      		subi r18,lo8(-(1))
+ 945 0298 3F4F      		sbci r19,hi8(-(1))
+ 946               	.L106:
+ 947               	.LBE195:
+ 948               	.LBE194:
+ 949               	.LSM131:
+ 950 029a 4115      		cp r20,__zero_reg__
+ 951 029c 5105      		cpc r21,__zero_reg__
+ 952 029e 01F4      		brne .L78
+ 953 02a0 3093 0000 		sts (StartAddr)+1,r19
+ 954 02a4 2093 0000 		sts StartAddr,r18
+ 955               	.LVL49:
+ 956               	.L73:
+ 957               	.LSM132:
+ 958 02a8 80E1      		ldi r24,lo8(16)
+ 959 02aa 0E94 0000 		call DiscardFillerBytes
+ 960               	.LVL50:
+ 961               	.L61:
+ 962               	.LBE176:
+ 963               	.LBB196:
+ 964               	.LBB197:
+ 965               	.LSM133:
+ 966 02ae 8091 E800 		lds r24,232
+ 967 02b2 8B7F      		andi r24,lo8(-5)
+ 968 02b4 00C0      		rjmp .L111
+ 969               	.LVL51:
+ 970               	.L113:
+ 971               	.LBE197:
+ 972               	.LBE196:
+ 973               	.LBB198:
+ 974               	.LBB199:
+ 975               	.LSM134:
+ 976 02b6 8091 E800 		lds r24,232
+ 977 02ba 877F      		andi r24,lo8(-9)
+ 978 02bc 8093 E800 		sts 232,r24
+ 979               	.LBE199:
+ 980               	.LBE198:
+ 981               	.LBB200:
+ 982               	.LBB201:
+ 983               	.LSM135:
+ 984 02c0 5D98      		cbi 43-32,5
+ 985               	.LBE201:
+ 986               	.LBE200:
+ 987               	.LSM136:
+ 988 02c2 83E0      		ldi r24,lo8(3)
+ 989 02c4 8093 0000 		sts PulseMSRemaining,r24
+ 990 02c8 00C0      		rjmp .L79
+ 991               	.L80:
+ 992               	.LSM137:
+ 993 02ca 8EB3      		in r24,62-32
+ 994 02cc 8823      		tst r24
+ 995 02ce 01F4      		brne .+2
+ 996 02d0 00C0      		rjmp .L96
+ 997               	.L79:
+ 998               	.LBB202:
+ 999               	.LBB203:
+ 1000               	.LSM138:
+ 1001 02d2 8091 E800 		lds r24,232
+ 1002               	.LBE203:
+ 1003               	.LBE202:
+ 1004               	.LSM139:
+ 1005 02d6 80FF      		sbrs r24,0
+ 1006 02d8 00C0      		rjmp .L80
+ 1007               	.LSM140:
+ 1008 02da 8091 0000 		lds r24,DFU_State
+ 1009 02de 8930      		cpi r24,lo8(9)
+ 1010 02e0 01F0      		breq .L81
+ 1011               	.LSM141:
+ 1012 02e2 8A30      		cpi r24,lo8(10)
+ 1013 02e4 01F4      		brne .L82
+ 1014 02e6 8091 0000 		lds r24,SentCommand+1
+ 1015 02ea 8130      		cpi r24,lo8(1)
+ 1016 02ec 01F4      		brne .L82
+ 1017               	.LSM142:
+ 1018 02ee 8091 0000 		lds r24,StartAddr
+ 1019 02f2 9091 0000 		lds r25,StartAddr+1
+ 1020               	.LBB204:
+ 1021               	.LBB205:
+ 1022               	.LSM143:
+ 1023 02f6 8093 F100 		sts 241,r24
+ 1024               	.LSM144:
+ 1025 02fa 9093 F100 		sts 241,r25
+ 1026 02fe 00C0      		rjmp .L110
+ 1027               	.L82:
+ 1028               	.LBE205:
+ 1029               	.LBE204:
+ 1030               	.LSM145:
+ 1031 0300 8091 0000 		lds r24,ResponseByte
+ 1032 0304 00C0      		rjmp .L112
+ 1033               	.L81:
+ 1034               	.LBB206:
+ 1035               	.LSM146:
+ 1036 0306 6091 0000 		lds r22,EndAddr
+ 1037 030a 7091 0000 		lds r23,(EndAddr)+1
+ 1038 030e 2091 0000 		lds r18,StartAddr
+ 1039 0312 3091 0000 		lds r19,(StartAddr)+1
+ 1040 0316 6F5F      		subi r22,lo8(-(1))
+ 1041 0318 7F4F      		sbci r23,hi8(-(1))
+ 1042 031a AB01      		movw r20,r22
+ 1043               	.LVL52:
+ 1044 031c 421B      		sub r20,r18
+ 1045 031e 530B      		sbc r21,r19
+ 1046 0320 6150      		subi r22,lo8(-(-1))
+ 1047 0322 7040      		sbci r23,hi8(-(-1))
+ 1048               	.LSM147:
+ 1049 0324 8091 0000 		lds r24,SentCommand+1
+ 1050 0328 8823      		tst r24
+ 1051 032a 01F4      		brne .L84
+ 1052               	.LBB207:
+ 1053               	.LSM148:
+ 1054 032c 8A01      		movw r16,r20
+ 1055               	.LVL53:
+ 1056 032e 1695      		lsr r17
+ 1057 0330 0795      		ror r16
+ 1058               	.LSM149:
+ 1059 0332 C901      		movw r24,r18
+ 1060               	.LVL54:
+ 1061 0334 A091 0000 		lds r26,Flash64KBPage
+ 1062               	.LVL55:
+ 1063 0338 B0E0      		ldi r27,lo8(0)
+ 1064               	.LVL56:
+ 1065 033a 9C01      		movw r18,r24
+ 1066 033c AD01      		movw r20,r26
+ 1067 033e 00C0      		rjmp .L85
+ 1068               	.LVL57:
+ 1069               	.L89:
+ 1070               	.LBB208:
+ 1071               	.LBB209:
+ 1072               	.LSM150:
+ 1073 0340 8091 F200 		lds r24,242
+ 1074               	.LVL58:
+ 1075               	.LBE209:
+ 1076               	.LBE208:
+ 1077               	.LSM151:
+ 1078 0344 8032      		cpi r24,lo8(32)
+ 1079 0346 01F4      		brne .L86
+ 1080               	.LBB210:
+ 1081               	.LBB211:
+ 1082               	.LSM152:
+ 1083 0348 8091 E800 		lds r24,232
+ 1084 034c 8E7F      		andi r24,lo8(-2)
+ 1085 034e 8093 E800 		sts 232,r24
+ 1086 0352 00C0      		rjmp .L87
+ 1087               	.L88:
+ 1088               	.LBE211:
+ 1089               	.LBE210:
+ 1090               	.LSM153:
+ 1091 0354 8EB3      		in r24,62-32
+ 1092 0356 8823      		tst r24
+ 1093 0358 01F4      		brne .+2
+ 1094 035a 00C0      		rjmp .L96
+ 1095               	.L87:
+ 1096               	.LBB212:
+ 1097               	.LBB213:
+ 1098               	.LSM154:
+ 1099 035c 8091 E800 		lds r24,232
+ 1100               	.LBE213:
+ 1101               	.LBE212:
+ 1102               	.LSM155:
+ 1103 0360 80FF      		sbrs r24,0
+ 1104 0362 00C0      		rjmp .L88
+ 1105               	.L86:
+ 1106               	.LBB214:
+ 1107               	.LSM156:
+ 1108 0364 F901      		movw r30,r18
+ 1109               	/* #APP */
+ 1110               	 ;  391 "Arduino-usbdfu.c" 1
+ 1111 0366 8591      		lpm r24, Z+
+ 1112 0368 9491      		lpm r25, Z
+ 1113               		
+ 1114               	 ;  0 "" 2
+ 1115               	.LVL59:
+ 1116               	/* #NOAPP */
+ 1117               	.LBE214:
+ 1118               	.LBB215:
+ 1119               	.LBB216:
+ 1120               	.LSM157:
+ 1121 036a 8093 F100 		sts 241,r24
+ 1122               	.LSM158:
+ 1123 036e 9093 F100 		sts 241,r25
+ 1124 0372 0150      		subi r16,lo8(-(-1))
+ 1125 0374 1040      		sbci r17,hi8(-(-1))
+ 1126 0376 2E5F      		subi r18,lo8(-(2))
+ 1127 0378 3F4F      		sbci r19,hi8(-(2))
+ 1128 037a 4F4F      		sbci r20,hlo8(-(2))
+ 1129 037c 5F4F      		sbci r21,hhi8(-(2))
+ 1130               	.LVL60:
+ 1131               	.L85:
+ 1132               	.LBE216:
+ 1133               	.LBE215:
+ 1134               	.LSM159:
+ 1135 037e 0115      		cp r16,__zero_reg__
+ 1136 0380 1105      		cpc r17,__zero_reg__
+ 1137 0382 01F4      		brne .L89
+ 1138               	.LSM160:
+ 1139 0384 7093 0000 		sts (StartAddr)+1,r23
+ 1140 0388 6093 0000 		sts StartAddr,r22
+ 1141 038c 00C0      		rjmp .L90
+ 1142               	.LVL61:
+ 1143               	.L84:
+ 1144               	.LBE207:
+ 1145               	.LSM161:
+ 1146 038e 8230      		cpi r24,lo8(2)
+ 1147 0390 01F4      		brne .L90
+ 1148 0392 00C0      		rjmp .L107
+ 1149               	.LVL62:
+ 1150               	.L95:
+ 1151               	.LBB217:
+ 1152               	.LBB218:
+ 1153               	.LSM162:
+ 1154 0394 8091 F200 		lds r24,242
+ 1155               	.LVL63:
+ 1156               	.LBE218:
+ 1157               	.LBE217:
+ 1158               	.LSM163:
+ 1159 0398 8032      		cpi r24,lo8(32)
+ 1160 039a 01F4      		brne .L97
+ 1161               	.LBB219:
+ 1162               	.LBB220:
+ 1163               	.LSM164:
+ 1164 039c 8091 E800 		lds r24,232
+ 1165 03a0 8E7F      		andi r24,lo8(-2)
+ 1166 03a2 8093 E800 		sts 232,r24
+ 1167 03a6 00C0      		rjmp .L93
+ 1168               	.L94:
+ 1169               	.LBE220:
+ 1170               	.LBE219:
+ 1171               	.LSM165:
+ 1172 03a8 8EB3      		in r24,62-32
+ 1173 03aa 8823      		tst r24
+ 1174 03ac 01F4      		brne .L93
+ 1175               	.LVL64:
+ 1176               	.L109:
+ 1177 03ae 3093 0000 		sts (StartAddr)+1,r19
+ 1178 03b2 2093 0000 		sts StartAddr,r18
+ 1179 03b6 00C0      		rjmp .L96
+ 1180               	.LVL65:
+ 1181               	.L93:
+ 1182               	.LBB221:
+ 1183               	.LBB222:
+ 1184               	.LSM166:
+ 1185 03b8 8091 E800 		lds r24,232
+ 1186               	.LBE222:
+ 1187               	.LBE221:
+ 1188               	.LSM167:
+ 1189 03bc 80FF      		sbrs r24,0
+ 1190 03be 00C0      		rjmp .L94
+ 1191               	.L97:
+ 1192               	.LBB223:
+ 1193               	.LBB224:
+ 1194               	.LSM168:
+ 1195 03c0 F999      		sbic 63-32,1
+ 1196 03c2 00C0      		rjmp .L97
+ 1197               	.LSM169:
+ 1198 03c4 32BD      		out (65)+1-32,r19
+ 1199 03c6 21BD      		out 65-32,r18
+ 1200               	.LSM170:
+ 1201               	/* #APP */
+ 1202               	 ;  208 "/Applications/Arduino.app/Contents/Resources/Java/hardware/tools/avr/bin/../lib/gcc/avr/4.
+ 1203               		/* START EEPROM READ CRITICAL SECTION */ 
+ 1204 03c8 F89A      		sbi 31, 0 
+ 1205 03ca 80B5      		in r24, 32 
+ 1206               		/* END EEPROM READ CRITICAL SECTION */ 
+ 1207               		
+ 1208               	 ;  0 "" 2
+ 1209               	.LVL66:
+ 1210               	/* #NOAPP */
+ 1211               	.LBE224:
+ 1212               	.LBE223:
+ 1213               	.LBB225:
+ 1214               	.LBB226:
+ 1215               	.LSM171:
+ 1216 03cc 8093 F100 		sts 241,r24
+ 1217 03d0 4150      		subi r20,lo8(-(-1))
+ 1218 03d2 5040      		sbci r21,hi8(-(-1))
+ 1219 03d4 2F5F      		subi r18,lo8(-(1))
+ 1220 03d6 3F4F      		sbci r19,hi8(-(1))
+ 1221               	.L107:
+ 1222               	.LBE226:
+ 1223               	.LBE225:
+ 1224               	.LSM172:
+ 1225 03d8 4115      		cp r20,__zero_reg__
+ 1226 03da 5105      		cpc r21,__zero_reg__
+ 1227 03dc 01F4      		brne .L95
+ 1228 03de 3093 0000 		sts (StartAddr)+1,r19
+ 1229 03e2 2093 0000 		sts StartAddr,r18
+ 1230               	.LVL67:
+ 1231               	.L90:
+ 1232               	.LSM173:
+ 1233 03e6 82E0      		ldi r24,lo8(2)
+ 1234               	.LVL68:
+ 1235 03e8 8093 0000 		sts DFU_State,r24
+ 1236 03ec 00C0      		rjmp .L110
+ 1237               	.LVL69:
+ 1238               	.L49:
+ 1239               	.LBE206:
+ 1240               	.LBB227:
+ 1241               	.LBB228:
+ 1242               	.LSM174:
+ 1243 03ee 8091 E800 		lds r24,232
+ 1244 03f2 877F      		andi r24,lo8(-9)
+ 1245 03f4 8093 E800 		sts 232,r24
+ 1246               	.LBE228:
+ 1247               	.LBE227:
+ 1248               	.LSM175:
+ 1249 03f8 8091 0000 		lds r24,DFU_Status
+ 1250               	.LBB229:
+ 1251               	.LBB230:
+ 1252               	.LSM176:
+ 1253 03fc 8093 F100 		sts 241,r24
+ 1254               	.LBE230:
+ 1255               	.LBE229:
+ 1256               	.LBB231:
+ 1257               	.LBB232:
+ 1258 0400 1092 F100 		sts 241,__zero_reg__
+ 1259               	.LBE232:
+ 1260               	.LBE231:
+ 1261               	.LBB233:
+ 1262               	.LBB234:
+ 1263               	.LSM177:
+ 1264 0404 1092 F100 		sts 241,__zero_reg__
+ 1265               	.LSM178:
+ 1266 0408 1092 F100 		sts 241,__zero_reg__
+ 1267               	.LBE234:
+ 1268               	.LBE233:
+ 1269               	.LSM179:
+ 1270 040c 8091 0000 		lds r24,DFU_State
+ 1271               	.LBB235:
+ 1272               	.LBB236:
+ 1273               	.LSM180:
+ 1274 0410 8093 F100 		sts 241,r24
+ 1275               	.LBE236:
+ 1276               	.LBE235:
+ 1277               	.LBB237:
+ 1278               	.LBB238:
+ 1279 0414 1092 F100 		sts 241,__zero_reg__
+ 1280 0418 00C0      		rjmp .L110
+ 1281               	.L50:
+ 1282               	.LBE238:
+ 1283               	.LBE237:
+ 1284               	.LBB239:
+ 1285               	.LBB240:
+ 1286               	.LSM181:
+ 1287 041a 8091 E800 		lds r24,232
+ 1288 041e 877F      		andi r24,lo8(-9)
+ 1289 0420 8093 E800 		sts 232,r24
+ 1290               	.LBE240:
+ 1291               	.LBE239:
+ 1292               	.LSM182:
+ 1293 0424 1092 0000 		sts DFU_Status,__zero_reg__
+ 1294 0428 00C0      		rjmp .L108
+ 1295               	.L51:
+ 1296               	.LBB241:
+ 1297               	.LBB242:
+ 1298               	.LSM183:
+ 1299 042a 8091 E800 		lds r24,232
+ 1300 042e 877F      		andi r24,lo8(-9)
+ 1301 0430 8093 E800 		sts 232,r24
+ 1302               	.LBE242:
+ 1303               	.LBE241:
+ 1304               	.LSM184:
+ 1305 0434 8091 0000 		lds r24,DFU_State
+ 1306               	.L112:
+ 1307               	.LBB243:
+ 1308               	.LBB244:
+ 1309               	.LSM185:
+ 1310 0438 8093 F100 		sts 241,r24
+ 1311               	.LVL70:
+ 1312               	.L110:
+ 1313               	.LBE244:
+ 1314               	.LBE243:
+ 1315               	.LBB245:
+ 1316               	.LBB246:
+ 1317               	.LSM186:
+ 1318 043c 8091 E800 		lds r24,232
+ 1319 0440 8E7F      		andi r24,lo8(-2)
+ 1320               	.LVL71:
+ 1321               	.L111:
+ 1322 0442 8093 E800 		sts 232,r24
+ 1323 0446 00C0      		rjmp .L108
+ 1324               	.LVL72:
+ 1325               	.L114:
+ 1326               	.LBE246:
+ 1327               	.LBE245:
+ 1328               	.LBB247:
+ 1329               	.LBB248:
+ 1330               	.LSM187:
+ 1331 0448 8091 E800 		lds r24,232
+ 1332 044c 877F      		andi r24,lo8(-9)
+ 1333 044e 8093 E800 		sts 232,r24
+ 1334               	.LBE248:
+ 1335               	.LBE247:
+ 1336               	.LBB249:
+ 1337               	.LBB250:
+ 1338               	.LSM188:
+ 1339 0452 5D9A      		sbi 43-32,5
+ 1340               	.LBE250:
+ 1341               	.LBE249:
+ 1342               	.LBB251:
+ 1343               	.LBB252:
+ 1344 0454 5C9A      		sbi 43-32,4
+ 1345               	.LBE252:
+ 1346               	.LBE251:
+ 1347               	.LSM189:
+ 1348 0456 82E0      		ldi r24,lo8(2)
+ 1349 0458 8093 0000 		sts DFU_State,r24
+ 1350               	.LVL73:
+ 1351               	.L108:
+ 1352               	.LSM190:
+ 1353 045c 0E94 0000 		call Endpoint_ClearStatusStage
+ 1354               	.LVL74:
+ 1355               	.L96:
+ 1356               	/* epilogue start */
+ 1357               	.LSM191:
+ 1358 0460 DF91      		pop r29
+ 1359 0462 CF91      		pop r28
+ 1360 0464 1F91      		pop r17
+ 1361 0466 0F91      		pop r16
+ 1362               	.LVL75:
+ 1363 0468 FF90      		pop r15
+ 1364 046a EF90      		pop r14
+ 1365 046c DF90      		pop r13
+ 1366 046e CF90      		pop r12
+ 1367 0470 BF90      		pop r11
+ 1368 0472 AF90      		pop r10
+ 1369               	.LVL76:
+ 1370 0474 9F90      		pop r9
+ 1371 0476 7F90      		pop r7
+ 1372 0478 6F90      		pop r6
+ 1373 047a 5F90      		pop r5
+ 1374 047c 4F90      		pop r4
+ 1375 047e 3F90      		pop r3
+ 1376 0480 2F90      		pop r2
+ 1377               	.LVL77:
+ 1378 0482 0895      		ret
+ 1379               	.LFE84:
+ 1381               		.section	.text.ResetHardware,"ax",@progbits
+ 1382               	.global	ResetHardware
+ 1384               	ResetHardware:
+ 1385               	.LFB83:
+ 1386               	.LSM192:
+ 1387               	/* prologue: function */
+ 1388               	/* frame size = 0 */
+ 1389               	.LSM193:
+ 1390 0000 0E94 0000 		call USB_ShutDown
+ 1391               	.LSM194:
+ 1392 0004 81E0      		ldi r24,lo8(1)
+ 1393 0006 85BF      		out 85-32,r24
+ 1394               	.LSM195:
+ 1395 0008 15BE      		out 85-32,__zero_reg__
+ 1396               	/* epilogue start */
+ 1397               	.LSM196:
+ 1398 000a 0895      		ret
+ 1399               	.LFE83:
+ 1401               		.section	.text.SetupHardware,"ax",@progbits
+ 1402               	.global	SetupHardware
+ 1404               	SetupHardware:
+ 1405               	.LFB82:
+ 1406               	.LSM197:
+ 1407               	/* prologue: function */
+ 1408               	/* frame size = 0 */
+ 1409               	.LSM198:
+ 1410 0000 84B7      		in r24,84-32
+ 1411 0002 877F      		andi r24,lo8(-9)
+ 1412 0004 84BF      		out 84-32,r24
+ 1413               	.LSM199:
+ 1414 0006 88E1      		ldi r24,lo8(24)
+ 1415               	/* #APP */
+ 1416               	 ;  126 "Arduino-usbdfu.c" 1
+ 1417 0008 0FB6      		in __tmp_reg__, __SREG__
+ 1418 000a F894      		cli
+ 1419 000c 8093 6000 		sts 96, r24
+ 1420 0010 1092 6000 		sts 96, __zero_reg__
+ 1421 0014 0FBE      		out __SREG__,__tmp_reg__
+ 1422               		
+ 1423               	 ;  0 "" 2
+ 1424               	.LSM200:
+ 1425               	/* #NOAPP */
+ 1426 0016 81E0      		ldi r24,lo8(1)
+ 1427 0018 85BF      		out 85-32,r24
+ 1428               	.LSM201:
+ 1429 001a 82E0      		ldi r24,lo8(2)
+ 1430 001c 85BF      		out 85-32,r24
+ 1431               	.LBB253:
+ 1432               	.LBB254:
+ 1433               	.LSM202:
+ 1434 001e 8AB1      		in r24,42-32
+ 1435 0020 8063      		ori r24,lo8(48)
+ 1436 0022 8AB9      		out 42-32,r24
+ 1437               	.LSM203:
+ 1438 0024 8BB1      		in r24,43-32
+ 1439 0026 8063      		ori r24,lo8(48)
+ 1440 0028 8BB9      		out 43-32,r24
+ 1441               	.LBE254:
+ 1442               	.LBE253:
+ 1443               	.LSM204:
+ 1444 002a 0E94 0000 		call USB_Init
+ 1445               	/* epilogue start */
+ 1446               	.LSM205:
+ 1447 002e 0895      		ret
+ 1448               	.LFE82:
+ 1450               		.section	.text.main,"ax",@progbits
+ 1451               	.global	main
+ 1453               	main:
+ 1454               	.LFB81:
+ 1455               	.LSM206:
+ 1456               	/* prologue: function */
+ 1457               	/* frame size = 0 */
+ 1458               	.LSM207:
+ 1459 0000 0E94 0000 		call SetupHardware
+ 1460               	.LSM208:
+ 1461               	/* #APP */
+ 1462               	 ;  108 "Arduino-usbdfu.c" 1
+ 1463 0004 7894      		sei
+ 1464               	 ;  0 "" 2
+ 1465               	/* #NOAPP */
+ 1466 0006 00C0      		rjmp .L120
+ 1467               	.L121:
+ 1468               	.LSM209:
+ 1469 0008 0E94 0000 		call USB_USBTask
+ 1470               	.L120:
+ 1471               	.LSM210:
+ 1472 000c 8091 0000 		lds r24,RunBootloader
+ 1473 0010 8823      		tst r24
+ 1474 0012 01F4      		brne .L121
+ 1475 0014 8091 0000 		lds r24,WaitForExit
+ 1476 0018 8823      		tst r24
+ 1477 001a 01F4      		brne .L121
+ 1478               	.LSM211:
+ 1479 001c 0E94 0000 		call ResetHardware
+ 1480               	.LSM212:
+ 1481 0020 E091 0000 		lds r30,AppStartPtr
+ 1482 0024 F091 0000 		lds r31,(AppStartPtr)+1
+ 1483 0028 0995      		icall
+ 1484               	.LFE81:
+ 1486               	.global	RunBootloader
+ 1487               		.data
+ 1490               	RunBootloader:
+ 1491 0000 01        		.byte	1
+ 1492               	.global	WaitForExit
+ 1493               	.global	WaitForExit
+ 1494               		.section .bss
+ 1497               	WaitForExit:
+ 1498 0000 00        		.skip 1,0
+ 1499               	.global	DFU_State
+ 1500               		.data
+ 1503               	DFU_State:
+ 1504 0001 02        		.byte	2
+ 1505               	.global	DFU_Status
+ 1506               	.global	DFU_Status
+ 1507               		.section .bss
+ 1510               	DFU_Status:
+ 1511 0001 00        		.skip 1,0
+ 1512               	.global	AppStartPtr
+ 1513               	.global	AppStartPtr
+ 1516               	AppStartPtr:
+ 1517 0002 0000      		.skip 2,0
+ 1518               	.global	Flash64KBPage
+ 1519               	.global	Flash64KBPage
+ 1522               	Flash64KBPage:
+ 1523 0004 00        		.skip 1,0
+ 1524               	.global	StartAddr
+ 1525               	.global	StartAddr
+ 1528               	StartAddr:
+ 1529 0005 0000      		.skip 2,0
+ 1530               	.global	EndAddr
+ 1531               	.global	EndAddr
+ 1534               	EndAddr:
+ 1535 0007 0000      		.skip 2,0
+ 1536               		.data
+ 1539               	SignatureInfo.2674:
+ 1540 0002 1E        		.byte	30
+ 1541 0003 94        		.byte	-108
+ 1542 0004 82        		.byte	-126
+ 1545               	BootloaderInfo.2673:
+ 1546 0005 20        		.byte	32
+ 1547 0006 DC        		.byte	-36
+ 1548 0007 FB        		.byte	-5
+ 1549               		.comm SentCommand,8,1
+ 1550               		.comm ResponseByte,1,1
+ 1551               		.comm PulseMSRemaining,3,1
+ 1624               	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 Arduino-usbdfu.c
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:2      *ABS*:0000003f __SREG__
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:3      *ABS*:0000003e __SP_H__
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:4      *ABS*:0000003d __SP_L__
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:5      *ABS*:00000034 __CCP__
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:6      *ABS*:00000000 __tmp_reg__
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:7      *ABS*:00000001 __zero_reg__
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:20     .text.DiscardFillerBytes:00000000 DiscardFillerBytes
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:86     .text.LoadStartEndAddresses:00000000 LoadStartEndAddresses
+                            *COM*:00000008 SentCommand
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1528   .bss:00000005 StartAddr
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1534   .bss:00000007 EndAddr
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:115    .text.ProcessBootloaderCommand:00000000 ProcessBootloaderCommand
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1503   .data:00000001 DFU_State
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1522   .bss:00000004 Flash64KBPage
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1510   .bss:00000001 DFU_Status
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1497   .bss:00000000 WaitForExit
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1516   .bss:00000002 AppStartPtr
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1490   .data:00000000 RunBootloader
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1545   .data:00000005 BootloaderInfo.2673
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1539   .data:00000002 SignatureInfo.2674
+                            *COM*:00000001 ResponseByte
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:447    .text.EVENT_USB_Device_UnhandledControlRequest:00000000 EVENT_USB_Device_UnhandledControlRequest
+                            *COM*:00000003 PulseMSRemaining
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1384   .text.ResetHardware:00000000 ResetHardware
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1404   .text.SetupHardware:00000000 SetupHardware
+/var/folders/8k/v9gprwvn01zdxs6cz2zwqlph0000gn/T//ccIubHCm.s:1453   .text.main:00000000 main
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss
+USB_ControlRequest
+Endpoint_ClearStatusStage
+USB_ShutDown
+USB_Init
+USB_USBTask
